@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.logging.Logger;
 
-public class Socket extends Thread{
+public class Socket implements Runnable{
 	private final static Logger LOGGER = Logger.getLogger(Socket.class.getName()); 
 	private int clientPort;
 	private InetAddress clientAddress;
