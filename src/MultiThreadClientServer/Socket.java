@@ -14,13 +14,15 @@ public class Socket implements Runnable{
 	private int clientPort;
 	private InetAddress clientAddress;
 	byte [] buffer;
+	int value;
 	DatagramSocket datagramSocket;
 	DatagramPacket packet;
 	final ByteArrayOutputStream baos=new ByteArrayOutputStream();
     final DataOutputStream daos=new DataOutputStream(baos);
-	public Socket(int clientPort, InetAddress clientAddress){
+	public Socket(int clientPort, InetAddress clientAddress, int value){
 		this.clientPort = clientPort;
 		this.clientAddress = clientAddress;
+		this.value = value;
 	}
 	public void run(){
 		try {
@@ -32,7 +34,7 @@ public class Socket implements Runnable{
 	}
 	public void InitiateConnectionWithClients() throws IOException, SocketException{
 		datagramSocket = new DatagramSocket();
-		daos.writeInt(3);
+		daos.writeInt(0);
 		daos.writeInt(4);
 		
 		daos.close();

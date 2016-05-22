@@ -34,11 +34,17 @@ public class Client {
     public Client(int value) {
 		try {
 			this.value = value;
+			daos.writeInt(value);
+			daos.close();
+			buffer = baos.toByteArray();
+
 			datagramSocket = new DatagramSocket();
-			buffer = new byte[50];
 			serverAddress = InetAddress.getLocalHost();
 			datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, PORT);
 			datagramSocket.send(datagramPacket);
+			buffer = new byte[50];
+			datagramPacket = new DatagramPacket(buffer, buffer.length);
+
 			scanner = new Scanner(System.in);
 			datagramSocket.receive(datagramPacket);
 			LOGGER.info("Received the packet from the port: " + datagramPacket.getPort() + " " + buffer.toString());
