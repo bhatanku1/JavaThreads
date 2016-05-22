@@ -33,6 +33,8 @@ public class Socket implements Runnable{
 	public void InitiateConnectionWithClients() throws IOException, SocketException{
 		datagramSocket = new DatagramSocket();
 		daos.writeInt(3);
+		daos.writeInt(4);
+		
 		daos.close();
 		buffer = baos.toByteArray();
 		//buffer = new byte[10];

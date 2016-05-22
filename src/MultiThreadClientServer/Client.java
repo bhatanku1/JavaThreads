@@ -24,31 +24,52 @@ public class Client {
 	private InetAddress serverAddress;
 	byte [] buffer;
 	byte [] buffer1;
-	int a;
+	int offset;
+	int length;
+	int value;
 	private ByteArrayInputStream bais;
 	private DataInputStream dais;
-    public Client() {
+	final ByteArrayOutputStream baos=new ByteArrayOutputStream();
+    final DataOutputStream daos=new DataOutputStream(baos);
+    public Client(int value) {
 		try {
+			this.value = value;
 			datagramSocket = new DatagramSocket();
 			buffer = new byte[50];
 			serverAddress = InetAddress.getLocalHost();
-			
 			datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, PORT);
-			
 			datagramSocket.send(datagramPacket);
 			scanner = new Scanner(System.in);
+			datagramSocket.receive(datagramPacket);
+			LOGGER.info("Received the packet from the port: " + datagramPacket.getPort() + " " + buffer.toString());
+			bais = new ByteArrayInputStream(buffer);
+			dais=new DataInputStream(bais);
+			offset = dais.readInt();
+			length = dais.readInt();
+			System.out.println("Value recieved: " + offset + "  " + length);
 			
 			while(true){
+				if(offset == -1 ) break;
+				for (int i = offset + 1; i<= length; i++){
+					System.out.print("Enter the value to be sent- >");
+					value = scanner.nextInt();
+					daos.writeInt(value);
+					daos.close();
+					buffer = baos.toByteArray();
+					datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, datagramPacket.getPort());
+					datagramSocket.send(datagramPacket);
+				}
+				buffer1 = new byte[50];
+				datagramPacket = new DatagramPacket(buffer1, buffer1.length);
 				datagramSocket.receive(datagramPacket);
 				LOGGER.info("Received the packet from the port: " + datagramPacket.getPort() + " " + buffer.toString());
 				bais = new ByteArrayInputStream(buffer);
 				dais=new DataInputStream(bais);
-				a = dais.readInt();
-				System.out.println("Value recieved: " + a);
-				buffer = scanner.nextLine().getBytes();
-				datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, datagramPacket.getPort());
-				datagramSocket.send(datagramPacket);
+				offset = dais.readInt();
+				length = dais.readInt();
+				LOGGER.info("Value recieved: " + offset + "  " + length);
 
+				
 			}
 			
 		} catch (SocketException e) {
@@ -59,6 +80,7 @@ public class Client {
 			LOGGER.severe("IOExeption: " + e.getMessage());
 		}
 	}
+	
 	
 
 
