@@ -34,12 +34,7 @@ public class ReadWebPage
                        throws IOException, MalformedURLException
                     {
                     	System.out.println("Thread for downloading" + Thread.currentThread().getName());
-                    	try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+                    	
                        List<String> lines = new ArrayList<>();
                        URL url = new URL(args[0]);
                        HttpURLConnection con;
@@ -51,6 +46,13 @@ public class ReadWebPage
                        String line;
                        while ((line = br.readLine()) != null)
                           lines.add(line);
+//                       //System.out.println("printing ine: "+line);
+                       try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
                        return lines;
                     }
                  };
@@ -60,7 +62,10 @@ public class ReadWebPage
       try
       {
          List<String> lines = future.get(5, TimeUnit.SECONDS);
+         System.out.println("Now after get call");
+
          for (String line: lines)
+
             System.out.println(line);
       }
       catch (ExecutionException ee)
@@ -71,29 +76,8 @@ public class ReadWebPage
       {
          System.err.println("URL not responding");
       }
-      System.out.println("Starting second time");
-      try {
-		Thread.sleep(2000);
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-      future = executor.submit(callable);
-      System.out.println("Main thread is here"); 
-      try
-      {
-         List<String> lines = future.get(5, TimeUnit.SECONDS);
-         for (String line: lines)
-            System.out.println(line);
-      }
-      catch (ExecutionException ee)
-      {
-         System.err.println("Callable through exception: "+ee.getMessage());
-      }
-      catch (InterruptedException | TimeoutException eite)
-      {
-         System.err.println("URL not responding");
-      }
+      
+
       executor.shutdown();
     }
 }

@@ -1,5 +1,7 @@
 package MultiThreadClientServer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -14,7 +16,8 @@ public class Socket implements Runnable{
 	byte [] buffer;
 	DatagramSocket datagramSocket;
 	DatagramPacket packet;
-	
+	final ByteArrayOutputStream baos=new ByteArrayOutputStream();
+    final DataOutputStream daos=new DataOutputStream(baos);
 	public Socket(int clientPort, InetAddress clientAddress){
 		this.clientPort = clientPort;
 		this.clientAddress = clientAddress;
@@ -29,8 +32,11 @@ public class Socket implements Runnable{
 	}
 	public void InitiateConnectionWithClients() throws IOException, SocketException{
 		datagramSocket = new DatagramSocket();
-		buffer = new byte[10];
-		buffer = "Connected".getBytes();
+		daos.writeInt(3);
+		daos.close();
+		buffer = baos.toByteArray();
+		//buffer = new byte[10];
+		//buffer = "Connected".getBytes();
 		packet = new DatagramPacket(buffer, buffer.length, clientAddress, clientPort);
 		LOGGER.info("Socket created at the server with port no:" + datagramSocket.getLocalPort());
 		datagramSocket.send(packet);	

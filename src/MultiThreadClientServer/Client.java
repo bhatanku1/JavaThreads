@@ -1,5 +1,9 @@
 package MultiThreadClientServer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,17 +23,28 @@ public class Client {
 	private String reply;
 	private InetAddress serverAddress;
 	byte [] buffer;
-	public Client() {
+	byte [] buffer1;
+	int a;
+	private ByteArrayInputStream bais;
+	private DataInputStream dais;
+    public Client() {
 		try {
 			datagramSocket = new DatagramSocket();
 			buffer = new byte[50];
 			serverAddress = InetAddress.getLocalHost();
+			
 			datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, PORT);
+			
 			datagramSocket.send(datagramPacket);
 			scanner = new Scanner(System.in);
+			
 			while(true){
 				datagramSocket.receive(datagramPacket);
-				LOGGER.info("Received the packet from the port: " + datagramPacket.getPort());
+				LOGGER.info("Received the packet from the port: " + datagramPacket.getPort() + " " + buffer.toString());
+				bais = new ByteArrayInputStream(buffer);
+				dais=new DataInputStream(bais);
+				a = dais.readInt();
+				System.out.println("Value recieved: " + a);
 				buffer = scanner.nextLine().getBytes();
 				datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, datagramPacket.getPort());
 				datagramSocket.send(datagramPacket);
