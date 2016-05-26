@@ -65,7 +65,12 @@ public class Socket implements Runnable{
 		datagramSocket.send(packet);	
 		
 		try{
+			if(valueReceived < value)
 			ReceiveData();
+			else {
+				LOGGER.info("Received all packets: Closing the connection");
+				datagramSocket.close();
+			}
 		}catch(SocketException e) {
 			LOGGER.severe("SocketException at CommunicateWithClient: " + e.getMessage());
 		}catch(IOException e){
@@ -113,7 +118,7 @@ public class Socket implements Runnable{
 		if (valueReceived >= value) offset = -1;
 		if (value - valueReceived >=4) length = 4;
 		else length = value - valueReceived;
-		LOGGER.info("Data request completed: New OFFSET is: " + offset + "and length is " + length);
+		LOGGER.info("Data request completed: New OFFSET is: " + offset + "and length is " + length + "and value recieved is:" + valueReceived);
 
 		for(int i = 0; i<4;i++) packetTracker[i] = 0;
 		LOGGER.info("Values initialized to 0 in packetTracer: " + packetTracker[0] + packetTracker[1] + packetTracker[2] + packetTracker[3]);
