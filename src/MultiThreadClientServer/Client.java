@@ -39,7 +39,9 @@ public class Client {
 			buffer = baos.toByteArray();
 
 			datagramSocket = new DatagramSocket();
-			serverAddress = InetAddress.getLocalHost();
+			//serverAddress = InetAddress.getLocalHost();
+			serverAddress = InetAddress.getByName("192.168.1.231");
+
 			datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, PORT);
 			datagramSocket.send(datagramPacket);
 			buffer = new byte[50];

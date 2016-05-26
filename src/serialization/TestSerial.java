@@ -1,4 +1,4 @@
-package MultiThreadClientServer;
+package serialization;
 /*The following is a simple example to serialize and deserialize an integer
  * using ByteArrayInputStream, ByteArrayOutputStream, DataInputStream & 
  * DataOutputStream. The same can be used for class objects as well. This
