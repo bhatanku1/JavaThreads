@@ -1,6 +1,8 @@
 package MultiThreadClientServer;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,6 +20,7 @@ public class Socket implements Runnable{
 	private int valueReceived;
 	private int offset;
 	private int length;
+	private int count;
 	private int [] packetTracker = new int[4];
 	DatagramSocket datagramSocket;
 	DatagramPacket packet;
@@ -52,6 +55,7 @@ public class Socket implements Runnable{
 		packet = new DatagramPacket(buffer, buffer.length, clientAddress, clientPort);
 		LOGGER.info("Socket created at the server with port no:" + datagramSocket.getLocalPort());
 		datagramSocket.send(packet);	
+		
 		try{
 			ReceiveData();
 		}catch(SocketException e) {
@@ -61,14 +65,16 @@ public class Socket implements Runnable{
 		}
 	}
 	public void ReceiveData() throws SocketException, IOException{
-		while(valueReceived < value) {
-			int count = 1;
+			
 			for(int i = 0; i< length; i++) {
+				byte[] buffer9 = new byte[50];
+				packet = new DatagramPacket(buffer9, buffer9.length);
+				LOGGER.info("Value of loop i is" + i);
 				datagramSocket.receive(packet);
-				UpdatePacketTracker(packet);
+				UpdatePacketTracker(buffer9);
 
 			}
-			UpdateOffsetAndLength(count);
+			UpdateOffsetAndLength();
 			SendDataRequest();
 			//LOGGER.info("Received packets from the Client with Address:" + packet.getAddress() + " and port:" + packet.getPort());
 			//buffer = "Message".getBytes();
@@ -76,37 +82,53 @@ public class Socket implements Runnable{
 			//datagramSocket.send(packet);
 		}
 		
-	}
-	private void UpdateOffsetAndLength(count) {
-		for (int i = offset; i<offset+4;i++){
+	
+	private void UpdateOffsetAndLength() {
+		int loopcounter;
+		if(value - valueReceived >=4) loopcounter = 4;
+		else loopcounter = value - valueReceived;
+		for (int i = 0; i<loopcounter;i++){
 			if(packetTracker[i] == 0){
-				offset= i;
+				offset= i + (4*count);
 				length = 1;
 				return;
 			}
 		}
 		valueReceived += 4;
-		offset += 4;
+		count++;
+		offset =  count * 4;
+		if (valueReceived >= value) offset = -1;
 		if (value - valueReceived >=4) length = 4;
 		else length = value - valueReceived;
-		
+		for(int i = 0; i<4;i++) packetTracker[i] = 0;
 		// TODO Auto-generated method stub
 		
 	}
-	private void UpdatePacketTracker(DatagramPacket packet2) {
+	private void UpdatePacketTracker(byte[] buffer10) {
 		int valueReceived;
-		valueReceived = ParsePacket(packet2);
+		valueReceived = ParsePacket(buffer10);
+		LOGGER.info("value received is" + valueReceived);
 		try{
-			packetTracker[valueReceived - 1 - offset] = 1;
+			packetTracker[valueReceived - 1 - ((4 * count))] = 1;
 		}catch(ArrayIndexOutOfBoundsException e){
 			LOGGER.info("Dropping this packet");
 			e.printStackTrace();
 		}
 		
 	}
-	private int ParsePacket(DatagramPacket packet2) {
+	private int ParsePacket(byte[] buffer11) {
+		 ByteArrayInputStream bais = new ByteArrayInputStream(buffer11);
+		 DataInputStream dais	=new DataInputStream(bais);
+		 
+		 
+			try {
+				return dais.readInt();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return 0;
 		// TODO Auto-generated method stub
-		return 0;
 	}
 	
 }

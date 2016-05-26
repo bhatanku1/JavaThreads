@@ -55,14 +55,27 @@ public class Client {
 			System.out.println("Value recieved: " + offset + "  " + length);
 			
 			while(true){
-				if(offset == -1 ) break;
-				for (int i = offset + 1; i<= length; i++){
+				ByteArrayOutputStream baos1=new ByteArrayOutputStream();
+			     DataOutputStream daos1=new DataOutputStream(baos1);
+			     byte [] bufferTest = new byte[10];
+			     int test;
+			     ByteArrayInputStream bais12 = new ByteArrayInputStream(bufferTest);
+			     DataInputStream dais12=new DataInputStream(bais12);
+				if(offset == -1 ) {
+					LOGGER.info("Packets transmitted succesfuly");
+					break;
+				}
+				for (int i = 1; i<= length; i++){
 					System.out.print("Enter the value to be sent- >");
+					byte [] buffer2 = new byte[50];
+
 					value = scanner.nextInt();
-					daos.writeInt(value);
-					daos.close();
-					buffer = baos.toByteArray();
-					datagramPacket = new DatagramPacket(buffer, buffer.length,serverAddress, datagramPacket.getPort());
+					daos1.writeInt(value);
+					daos1.close();
+					buffer2 = baos1.toByteArray();
+					test = dais12.readInt();
+					LOGGER.info("value to be sent is: " + test);
+					datagramPacket = new DatagramPacket(buffer2, buffer2.length,serverAddress, datagramPacket.getPort());
 					datagramSocket.send(datagramPacket);
 				}
 				buffer1 = new byte[50];
