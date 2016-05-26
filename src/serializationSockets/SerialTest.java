@@ -1,4 +1,4 @@
-package serialization;
+package serializationSockets;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,6 +11,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+
+import com.sun.media.jfxmedia.logging.Logger;
 
 public class SerialTest {
 	private  ByteArrayOutputStream baos;
@@ -65,7 +67,8 @@ public class SerialTest {
 	}
 	
 public static void main(String[] args){
-	SerialClass s = new SerialClass(3, "bhatia");
+
+	SerialClass s = new SerialClass(3, "bhatia123333");
 	SerialClass s1;
 	SerialTest t = new SerialTest();
 	byte [] buffer = new byte[100];
@@ -73,6 +76,7 @@ public static void main(String[] args){
 	 try {
 		DatagramSocket datagramSocket = new DatagramSocket();
 		InetAddress server = InetAddress.getLocalHost();
+		System.out.println("Length: " + buffer.length);
 		DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length,server, 12121);
 		datagramSocket.send(datagramPacket);
 
