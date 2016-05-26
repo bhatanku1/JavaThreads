@@ -24,13 +24,22 @@ public class Socket implements Runnable{
 	private int [] packetTracker = new int[4];
 	DatagramSocket datagramSocket;
 	DatagramPacket packet;
-	final ByteArrayOutputStream baos=new ByteArrayOutputStream();
-    final DataOutputStream daos=new DataOutputStream(baos);
+	private ByteArrayOutputStream baos;
+	private DataOutputStream daos;
 	public Socket(int clientPort, InetAddress clientAddress, int value){
 		this.clientPort = clientPort;
 		this.clientAddress = clientAddress;
 		this.value = value;
 		this.valueReceived = 0;
+		try {
+			datagramSocket = new DatagramSocket();
+			LOGGER.info("Socket created at the server with port no:" + datagramSocket.getLocalPort());
+
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		offset = 0;
 		if(value >= 4) {
 			length = 4;
@@ -46,14 +55,13 @@ public class Socket implements Runnable{
 		}
 	}
 	public void SendDataRequest() throws IOException, SocketException{
-		datagramSocket = new DatagramSocket();
-		
+		baos=new ByteArrayOutputStream();
+		daos=new DataOutputStream(baos);
 		daos.writeInt(offset);
 		daos.writeInt(length);
 		daos.close();
 		buffer = baos.toByteArray();
 		packet = new DatagramPacket(buffer, buffer.length, clientAddress, clientPort);
-		LOGGER.info("Socket created at the server with port no:" + datagramSocket.getLocalPort());
 		datagramSocket.send(packet);	
 		
 		try{
@@ -74,6 +82,7 @@ public class Socket implements Runnable{
 				UpdatePacketTracker(buffer9);
 
 			}
+			LOGGER.info("The data response received, nw validating the values received");
 			UpdateOffsetAndLength();
 			SendDataRequest();
 			//LOGGER.info("Received packets from the Client with Address:" + packet.getAddress() + " and port:" + packet.getPort());
@@ -84,13 +93,17 @@ public class Socket implements Runnable{
 		
 	
 	private void UpdateOffsetAndLength() {
+		LOGGER.info("Updating the value of offset and length");
 		int loopcounter;
 		if(value - valueReceived >=4) loopcounter = 4;
 		else loopcounter = value - valueReceived;
+		LOGGER.info("Value of loopcounter is : "+ loopcounter);
 		for (int i = 0; i<loopcounter;i++){
 			if(packetTracker[i] == 0){
 				offset= i + (4*count);
 				length = 1;
+				LOGGER.info("Packet at position: " + i + "not received");
+				LOGGER.info("OFFSET is: " + offset + "and length is " + length);
 				return;
 			}
 		}
@@ -100,7 +113,11 @@ public class Socket implements Runnable{
 		if (valueReceived >= value) offset = -1;
 		if (value - valueReceived >=4) length = 4;
 		else length = value - valueReceived;
+		LOGGER.info("Data request completed: New OFFSET is: " + offset + "and length is " + length);
+
 		for(int i = 0; i<4;i++) packetTracker[i] = 0;
+		LOGGER.info("Values initialized to 0 in packetTracer: " + packetTracker[0] + packetTracker[1] + packetTracker[2] + packetTracker[3]);
+
 		// TODO Auto-generated method stub
 		
 	}
@@ -110,6 +127,7 @@ public class Socket implements Runnable{
 		LOGGER.info("value received is" + valueReceived);
 		try{
 			packetTracker[valueReceived - 1 - ((4 * count))] = 1;
+			LOGGER.info("Values updated in packetTracer: " + packetTracker[0] + packetTracker[1] + packetTracker[2] + packetTracker[3]);
 		}catch(ArrayIndexOutOfBoundsException e){
 			LOGGER.info("Dropping this packet");
 			e.printStackTrace();
