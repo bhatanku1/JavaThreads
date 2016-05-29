@@ -18,6 +18,11 @@ public class SerialTest {
 	private ByteArrayInputStream in;
 	private ObjectInputStream is;
 	public SerialTest() {
+		
+		
+	}
+	
+	public byte[] serialize(Object s){
 		baos = new ByteArrayOutputStream();
 		try {
 			oout = new ObjectOutputStream(baos);
@@ -25,10 +30,6 @@ public class SerialTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	}
-	
-	public byte[] serialize(SerialClass s){
 		try {
 			try {
 				oout.writeObject(s);
@@ -65,29 +66,23 @@ public class SerialTest {
 	}
 	
 public static void main(String[] args){
-	SerialClass s = new SerialClass(3, "bhatia");
+	SerialClass s = new SerialClass(3, "ankur");
+	SerialClass1 sc1 = new SerialClass1(3, "bhatia");
+Object o;
 	SerialClass s1;
+	SerialClass1 sc12;
 	SerialTest t = new SerialTest();
 	byte [] buffer = new byte[100];
 	buffer = t.serialize(s);
-	 try {
-		DatagramSocket datagramSocket = new DatagramSocket();
-		InetAddress server = InetAddress.getLocalHost();
-		DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length,server, 12121);
-		datagramSocket.send(datagramPacket);
+	
+	o =  t.deserialize(buffer);
+	buffer = new byte[100];
+	buffer = t.serialize(sc1);
+	//o =  t.deserialize(buffer);
+	//sc12 = (SerialClass1) t.deserialize(buffer);
+	//System.out.println(s1.getName());
+	System.out.println(o.getClass().getName());
+	//System.out.println(sc12.getLname());
 
-
-	} catch (SocketException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (UnknownHostException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	s1 = (SerialClass) t.deserialize(buffer);
-	System.out.println(s1.getName());
 }
 }

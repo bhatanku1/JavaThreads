@@ -68,7 +68,7 @@ public class SerialTest {
 	
 public static void main(String[] args){
 
-	SerialClass s = new SerialClass(3, "bhatia123333");
+	SerialClass s = new SerialClass(2500000, "");
 	SerialClass s1;
 	SerialTest t = new SerialTest();
 	byte [] buffer = new byte[100];

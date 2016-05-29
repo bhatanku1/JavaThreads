@@ -37,7 +37,7 @@ public class Server {
 				dais=new ObjectInputStream(bais);
 				s =  (SerialClass) dais.readObject();
 				//System.out.println(s.getName());
-				LOGGER.info("Value received from the client is: " + s.getName());
+				LOGGER.info("Value received from the client is: " + s.getName() + s.getRoll());
 
 				//Whenever a message is received on this thread, Server initiates a new Connection 
 				//with the client through a new socket.
